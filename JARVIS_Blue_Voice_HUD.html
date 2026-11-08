@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JARVIS — Blue Voice HUD</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#050b18;color:#dffaff;font-family:Arial,sans-serif}
+.app{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 18px 24px;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,#102e59 0,#07152d 48%,#030914 100%)}
+.app:before{content:"";position:absolute;inset:0;opacity:.13;background-image:linear-gradient(30deg,transparent 47%,#39cfff 48%,transparent 49%),linear-gradient(150deg,transparent 47%,#39cfff 48%,transparent 49%);background-size:70px 80px;pointer-events:none}
+.top,.hud,.bottom{z-index:1;width:100%;max-width:560px}
+.top{text-align:center}.eyebrow{font-size:10px;letter-spacing:5px;color:#6eb9e8}.top h1{font-size:32px;letter-spacing:9px;font-weight:300;margin:8px 0;color:#d8faff;text-shadow:0 0 18px #1acfff}
+.hud{display:flex;flex-direction:column;align-items:center;gap:18px}
+.visual{width:min(88vw,390px);aspect-ratio:1;position:relative;display:grid;place-items:center}
+.core{width:42%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle at 35% 30%,#d8ffff 0 2%,#48dfff 7%,#0878b9 25%,#08264c 58%,#020d21 78%);box-shadow:0 0 18px #42dfff,0 0 55px #087dce,0 0 100px #0752a6,inset 0 0 28px #9af7ff}
+.core:before,.core:after{content:"";position:absolute;border-radius:50%;inset:-12px;border:1px solid #54dfff;box-shadow:0 0 15px #12bfff}
+.core:after{inset:-25px;border-color:#287acb;opacity:.7}
+.micicon{font-size:48px;color:#eaffff;text-shadow:0 0 14px #39dfff;z-index:2}
+.ring{position:absolute;border-radius:50%;inset:2%;border:1px solid #2378b5;box-shadow:0 0 14px #087cc2}
+.ring.r2{inset:8%;border:2px dashed #46dfff;animation:spin 22s linear infinite}
+.ring.r3{inset:15%;border:1px dotted #7bcfff;animation:spin 14s linear infinite reverse}
+.ticks{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,#55dfff 0deg 1deg,transparent 1deg 3deg);mask:radial-gradient(circle,transparent 0 53%,#000 54% 58%,transparent 59%);opacity:.9;animation:spin 35s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:19px;color:#63eaff;text-shadow:0 0 12px #00aaff;letter-spacing:2px}
+.hint{font-size:10px;letter-spacing:3px;color:#7fa9cb}
+.commands{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.chip{border:1px solid #285a83;border-radius:20px;padding:9px 14px;font-size:11px;color:#b9eaff;background:#0b2340}
+.bottom{display:flex;flex-direction:column;align-items:center;gap:18px}
+.wave{height:48px;width:100%;display:flex;align-items:center;justify-content:center;gap:3px}
+.wave i{display:block;width:3px;height:7px;border-radius:5px;background:linear-gradient(#6cf5ff,#328bff);opacity:.8}
+.wave.active i{animation:wave .55s ease-in-out infinite alternate}
+.wave i:nth-child(3n){animation-delay:.18s}.wave i:nth-child(2n){animation-delay:.3s}
+@keyframes wave{to{height:38px}}
+.actions{display:flex;gap:18px;align-items:center}
+button{border:1px solid #398ab8;color:#dffaff;background:linear-gradient(145deg,#123d65,#071a32);border-radius:50%;width:54px;height:54px;font-size:21px;box-shadow:0 0 18px #0875aa}
+button.main{width:70px;height:70px;font-size:28px;border-color:#66eaff;box-shadow:0 0 28px #00aaff}
+button:active{transform:scale(.94)}
+.foot{font-size:9px;letter-spacing:2px;color:#6489aa}
+</style></head>
+<body><main class="app" id="app">
+<header class="top"><div class="eyebrow">VOICE ASSISTANT</div><h1>JARVIS</h1></header>
+<section class="hud">
+<div class="visual"><div class="ticks"></div><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"><span class="micicon">♩</span></div></div>
+<div class="status" id="status">Listening...</div><div class="hint">VOICE INTERFACE</div>
+<div class="commands"><span class="chip">♫ &nbsp; Play music</span><span class="chip">♧ &nbsp; Set a reminder</span><span class="chip">☼ &nbsp; What's the weather?</span></div>
+</section>
+<footer class="bottom"><div class="wave" id="wave"></div><div class="actions"><button onclick="toggleLight()" aria-label="Toggle light">☼</button><button class="main" onclick="listen()" aria-label="Microphone">🎙</button><button onclick="resetUI()" aria-label="Reset">↻</button></div><div class="foot">● ACTIVE &nbsp;&nbsp; ◈ ENCRYPTED &amp; SECURE &nbsp;&nbsp; CONNECTED</div></footer>
+</main>
+<script>
+const wave=document.getElementById('wave');for(let i=0;i<65;i++)wave.appendChild(document.createElement('i'));
+function set(s){document.getElementById('status').textContent=s}
+function toggleLight(){document.getElementById('app').classList.toggle('dim')}
+function resetUI(){speechSynthesis.cancel();wave.classList.remove('active');set('Listening...')}
+function listen(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){set('Use Chrome for voice input');return}
+const r=new SR();r.lang='hi-IN';set('Listening...');wave.classList.add('active');r.onresult=e=>{const t=e.results[0][0].transcript;set(t);const u=new SpeechSynthesisUtterance('Aapne kaha '+t);u.lang='hi-IN';u.onstart=()=>set('Speaking...');u.onend=resetUI;speechSynthesis.speak(u)};r.onerror=()=>{set('Mic unavailable');wave.classList.remove('active')};r.onend=()=>{if(document.getElementById('status').textContent==='Listening...')wave.classList.remove('active')};r.start()}
+</script></body></html>
