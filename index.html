@@ -1,39 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI V1.0</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#09091d;
+    color:white;
+    font-family:Arial,sans-serif;
+    height:100vh;
+    overflow:hidden;
+}
+
+.app{
+    width:100%;
+    height:100vh;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow:hidden;
+    background:radial-gradient(
+        ellipse at 50% 48%,
+        #25205a 0%,#11112e 45%,#08091b 100%
+    );
+}
+
+.bg-glow{
+    position:absolute;
+    width:350px;
+    height:350px;
+    background:#6926ff;
+    filter:blur(130px);
+    opacity:.25;
+    top:25%;
+    left:10%;
+    pointer-events:none;
+}
+
+.bg-glow2{
+    position:absolute;
+    width:300px;
+    height:300px;
+    background:#00d9ff;
+    filter:blur(120px);
+    opacity:.18;
+    top:40%;
+    right:0;
+    pointer-events:none;
+}
+
+.header{
+    margin-top:65px;
+    text-align:center;
+    z-index:2;
+}
+
+.logo{
+    font-size:42px;
+    font-weight:300;
+    letter-spacing:9px;
+    background:linear-gradient(
+        90deg,#54eaff,#a78bff,#e19bff
+    );
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.subtitle{
+    font-size:14px;
+    color:#a69be8;
+    margin-top:8px;
+    letter-spacing:1px;
+}
+
+.subtitle span{
+    color:#36eaff;
+}
+
+.orb-area{
+    position:absolute;
+    top:23%;
+    width:340px;
+    height:340px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.orb{
+    position:relative;
+    width:225px;
+    height:225px;
+    border-radius:50%;
+    background:radial-gradient(
+        circle at 35% 30%,
+        rgba(255,255,255,.22),
+        rgba(113,68,255,.10) 35%,
+        rgba(0,210,255,.12) 65%,
+        transparent 75%
+    );
+    box-shadow:
+        0 0 20px #9d65ff,
+        0 0 55px rgba(122,75,255,.7),
+        inset 0 0 30px rgba(120,180,255,.4);
+    animation:orbPulse 4s ease-in-out infinite alternate;
+}
+
+.ring{
+    position:absolute;
+    border-radius:50%;
+    border:2px solid transparent;
+    pointer-events:none;
+}
+
+.ring1{
+    inset:-5px;
+    border-top-color:#e6baff;
+    border-left-color:#a477ff;
+    border-bottom-color:#40dfff;
+    box-shadow:0 0 15px #a76aff;
+    animation:rotate1 7s linear infinite;
+}
+
+.ring2{
+    inset:-17px;
+    border-top-color:#8c66ff;
+    border-right-color:#43dfff;
+    border-bottom-color:rgba(174,113,255,.6);
+    animation:rotate2 9s linear infinite;
+}
+
+.ring3{
+    inset:-27px;
+    border-left-color:#8d6aff;
+    border-bottom-color:#28dfff;
+    opacity:.7;
+    animation:rotate1 12s linear infinite;
+}
+
+.ring4{
+    inset:-38px;
+    border-top-color:rgba(111,213,255,.5);
+    border-right-color:rgba(177,113,255,.6);
+    opacity:.5;
+    animation:rotate2 15s linear infinite;
+}
+
+.orb-light{
+    position:absolute;
+    width:190px;
+    height:190px;
+    border-radius:50%;
+    border:1px solid rgba(130,190,255,.5);
+    filter:blur(2px);
+    transform:rotate(45deg) scaleY(.7);
+    box-shadow:0 0 20px #8b66ff;
+}
+
+.orb-light2{
+    position:absolute;
+    width:250px;
+    height:160px;
+    border:2px solid rgba(55,224,255,.35);
+    border-radius:50%;
+    transform:rotate(-40deg);
+    filter:blur(2px);
+    animation:rotate1 10s linear infinite;
+}
+
+.orb-light3{
+    position:absolute;
+    width:250px;
+    height:170px;
+    border:2px solid rgba(186,111,255,.5);
+    border-radius:50%;
+    transform:rotate(40deg);
+    filter:blur(3px);
+    animation:rotate2 12s linear infinite;
+}
+
+.orb-core{
+    position:absolute;
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    background:radial-gradient(
+        circle,
+        rgba(120,100,255,.12),
+        rgba(20,25,75,.1),
+        transparent
+    );
+    box-shadow:inset 0 0 30px rgba(0,220,255,.15);
+}
+
+@keyframes rotate1{
+    from{transform:rotate(0deg)}
+    to{transform:rotate(360deg)}
+}
+
+@keyframes rotate2{
+    from{transform:rotate(360deg)}
+    to{transform:rotate(0deg)}
+}
+
+@keyframes orbPulse{
+    from{
+        transform:scale(.96);
+        filter:brightness(.85);
+    }
+    to{
+        transform:scale(1.04);
+        filter:brightness(1.3);
+    }
+}
+
+/* VOICE ANIMATION */
+
+.app.listening .orb,
+.app.speaking .orb{
+    animation:orbPulse .7s ease-in-out infinite alternate;
+}
+
+.wave-container{
+    position:absolute;
+    bottom:125px;
+    width:100%;
+    height:100px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:3px;
+    overflow:hidden;
+}
+
+.wave-container::before{
+    content:"";
+    position:absolute;
+    width:90%;
+    height:2px;
+    background:linear-gradient(
+        90deg,transparent,#32dfff,#ba72ff,transparent
+    );
+    box-shadow:0 0 15px #43dfff;
+}
+
+.bar{
+    width:3px;
+    height:10px;
+    border-radius:5px;
+    background:linear-gradient(to top,#9d65ff,#39eaff);
+    box-shadow:0 0 8px #46dfff;
+    animation:wave 1s ease-in-out infinite alternate;
+    animation-play-state:paused;
+}
+
+.app.listening .bar,
+.app.speaking .bar{
+    animation-play-state:running;
+}
+
+@keyframes wave{
+    0%{
+        transform:scaleY(.2);
+        opacity:.5;
+    }
+    100%{
+        transform:scaleY(var(--height));
+        opacity:1;
+    }
+}
+
+/* MICROPHONE */
+
+.voice-controls{
+    position:absolute;
+    bottom:270px;
+    z-index:5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+}
+
+#micBtn{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:1px solid rgba(75,220,255,.6);
+    background:rgba(30,35,80,.65);
+    color:#55eaff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    box-shadow:0 0 15px rgba(50,210,255,.2);
+}
+
+#micBtn:active{
+    transform:scale(.94);
+}
+
+#micBtn.listening{
+    background:rgba(50,100,150,.8);
+    box-shadow:0 0 25px #43dfff;
+}
+
+#voiceText{
+    color:#b9caff;
+    font-size:11px;
+    text-align:center;
+    max-width:300px;
+    white-space:pre-line;
+    line-height:1.5;
+}
+
+.bottom{
+    position:absolute;
+    bottom:5px;
+    font-size:9px;
+    letter-spacing:2px;
+    color:#8c9bd8;
+}
+
+@media(max-height:700px){
+    .header{margin-top:45px}
+    .orb-area{
+        top:20%;
+        transform:scale(.8);
+    }
+    .wave-container{bottom:105px}
+    .voice-controls{bottom:25px}
+}
+
+@media(max-width:400px){
+    .orb-area{transform:scale(.85)}
+    .logo{font-size:35px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app" id="app">
+
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<div class="header">
+    <div class="logo">JARVIS</div>
+    <div class="subtitle">
+        Voice Assistant · <span id="status">Active</span>
+    </div>
+</div>
+
+<div class="orb-area">
+    <div class="orb">
+        <div class="ring ring1"></div>
+        <div class="ring ring2"></div>
+        <div class="ring ring3"></div>
+        <div class="ring ring4"></div>
+        <div class="orb-light"></div>
+        <div class="orb-light2"></div>
+        <div class="orb-light3"></div>
+        <div class="orb-core"></div>
+    </div>
+</div>
+
+<div class="wave-container" id="wave"></div>
+
+<div class="voice-controls">
+
+<button id="micBtn" type="button">
+
+<svg viewBox="0 0 24 24"
+width="23" height="23"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round">
+
+<rect x="9" y="2" width="6" height="13" rx="3"/>
+<path d="M5 11a7 7 0 0 0 14 0"/>
+<path d="M12 18v4M9 22h6"/>
+
+</svg>
+
+</button>
+
+<p id="voiceText">Tap microphone and speak</p>
+
+</div>
+
+<div class="bottom">
+JARVIS INTELLIGENCE SYSTEM · V1.0
+</div>
+
+</div>
+
 <script>
 
-/* =========================
-   JARVIS V1.0
-   VOICE COMMAND SYSTEM
-========================= */
+/* ELEMENTS */
 
 const app = document.getElementById("app");
 const micBtn = document.getElementById("micBtn");
 const voiceText = document.getElementById("voiceText");
-const status = document.getElementById("status");
+const statusText = document.getElementById("status");
 
-let recognition = null;
-let isListening = false;
+
+/* WAVEFORM */
+
+const wave = document.getElementById("wave");
+
+for(let i=0;i<95;i++){
+
+    const bar = document.createElement("div");
+
+    bar.className = "bar";
+
+    const height = Math.random()*4+1;
+
+    bar.style.setProperty("--height",height);
+
+    bar.style.animationDuration =
+        (Math.random()*.8+.4)+"s";
+
+    bar.style.animationDelay =
+        (Math.random()*.8)+"s";
+
+    wave.appendChild(bar);
+
+}
+
+
+/* LANGUAGE */
+
 let currentLanguage = "en-IN";
-let longPressTimer = null;
-let longPressed = false;
 
 
-/* =========================
-   VOICE RECOGNITION SUPPORT
-========================= */
+/* SPEECH OUTPUT */
 
-const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+function jarvisSpeak(message,onComplete){
 
+    if(!("speechSynthesis" in window)){
 
-/* =========================
-   VOICE OUTPUT
-========================= */
+        if(onComplete) onComplete();
 
-function jarvisSpeak(message) {
-
-    if (!("speechSynthesis" in window)) {
         return;
+
     }
 
     speechSynthesis.cancel();
@@ -45,30 +467,39 @@ function jarvisSpeak(message) {
     speech.pitch = 1;
     speech.volume = 1;
 
-    speech.onstart = () => {
+    speech.onstart = function(){
+
         app.classList.add("speaking");
-        status.innerText = "Speaking";
+        statusText.innerText = "Speaking";
+
     };
 
-    speech.onend = () => {
+    speech.onend = function(){
+
         app.classList.remove("speaking");
-        status.innerText = "Active";
+        statusText.innerText = "Active";
+
+        if(onComplete) onComplete();
+
     };
 
-    speech.onerror = () => {
+    speech.onerror = function(){
+
         app.classList.remove("speaking");
-        status.innerText = "Active";
+        statusText.innerText = "Active";
+
+        if(onComplete) onComplete();
+
     };
 
     speechSynthesis.speak(speech);
+
 }
 
 
-/* =========================
-   RESPONSE
-========================= */
+/* RESPONSE */
 
-function respond(message) {
+function respond(message){
 
     voiceText.innerText = "JARVIS: " + message;
 
@@ -77,111 +508,113 @@ function respond(message) {
 }
 
 
-/* =========================
-   TIME FUNCTION
-========================= */
+/* TIME */
 
-function getTime() {
+function getTime(){
 
-    return new Date().toLocaleTimeString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true
+    return new Date().toLocaleTimeString("en-IN",{
+
+        timeZone:"Asia/Kolkata",
+        hour:"2-digit",
+        minute:"2-digit",
+        hour12:true
+
     });
 
 }
 
 
-/* =========================
-   DATE FUNCTION
-========================= */
+/* DATE */
 
-function getDate() {
+function getDate(){
 
-    return new Date().toLocaleDateString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+    return new Date().toLocaleDateString("en-IN",{
+
+        timeZone:"Asia/Kolkata",
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+
     });
 
 }
 
 
-/* =========================
-   COMMAND PROCESSING
-========================= */
+/* COMMAND SYSTEM */
 
-function processCommand(command) {
+function processCommand(command){
 
     let text = command.toLowerCase().trim();
 
-    text = text.replace(/[.,?!।]/g, " ");
-    text = text.replace(/\s+/g, " ");
+    text = text.replace(/[.,?!।]/g," ");
+    text = text.replace(/\s+/g," ");
 
     let reply = "";
 
+
     /* TIME */
 
-    if (
+    if(
         /\btime\b/.test(text) ||
         text.includes("समय") ||
         text.includes("टाइम") ||
         text.includes("kitne baje") ||
-        text.includes("कितने बजे") ||
-        text.includes("समय बताओ")
-    ) {
+        text.includes("कितने बजे")
+    ){
 
         reply = "Sir, the current time is " + getTime();
 
     }
 
+
     /* DATE */
 
-    else if (
+    else if(
         /\b(date|today|day)\b/.test(text) ||
         text.includes("तारीख") ||
         text.includes("दिनांक") ||
         text.includes("आज") ||
         text.includes("tarikh")
-    ) {
+    ){
 
         reply = "Sir, today's date is " + getDate();
 
     }
 
+
     /* NAME */
 
-    else if (
+    else if(
         text.includes("your name") ||
         text.includes("who are you") ||
         text.includes("naam kya") ||
         text.includes("नाम क्या") ||
         text.includes("आप कौन")
-    ) {
+    ){
 
         reply = "I am JARVIS, your personal voice assistant.";
 
     }
 
+
     /* HOW ARE YOU */
 
-    else if (
+    else if(
         text.includes("how are you") ||
         text.includes("कैसे हो") ||
         text.includes("कैसा है") ||
         text.includes("kaise ho")
-    ) {
+    ){
 
         reply = "I am functioning perfectly, Sir. Thank you for asking.";
 
     }
 
+
     /* GREETING */
 
-    else if (
+    else if(
         text.includes("hello") ||
         text.includes("hey") ||
         text.includes("hi") ||
@@ -189,82 +622,93 @@ function processCommand(command) {
         text.includes("हैलो") ||
         text.includes("नमस्ते") ||
         text.includes("जार्विस")
-    ) {
+    ){
 
         reply = "Hello Sir. How can I help you?";
 
     }
 
+
     /* THANK YOU */
 
-    else if (
+    else if(
         text.includes("thank you") ||
         text.includes("thanks") ||
         text.includes("धन्यवाद") ||
         text.includes("शुक्रिया")
-    ) {
+    ){
 
         reply = "You are welcome, Sir.";
 
     }
 
+
     /* GOOD MORNING */
 
-    else if (text.includes("good morning")) {
+    else if(text.includes("good morning")){
 
         reply = "Good morning Sir. Have a wonderful day.";
 
     }
 
+
     /* GOOD NIGHT */
 
-    else if (text.includes("good night")) {
+    else if(text.includes("good night")){
 
         reply = "Good night Sir. Take care.";
 
     }
 
+
     /* YOUTUBE */
 
-    else if (
+    else if(
         text.includes("youtube") ||
         text.includes("यूट्यूब")
-    ) {
+    ){
 
-        respond("Opening YouTube, Sir.");
+        voiceText.innerText = "JARVIS: Opening YouTube, Sir.";
 
-        setTimeout(() => {
+        jarvisSpeak("Opening YouTube, Sir.",function(){
+
             window.location.href = "https://www.youtube.com/";
-        }, 1200);
+
+        });
 
         return;
 
     }
+
 
     /* GOOGLE */
 
-    else if (
+    else if(
         text.includes("google") ||
         text.includes("गूगल")
-    ) {
+    ){
 
-        respond("Opening Google, Sir.");
+        voiceText.innerText = "JARVIS: Opening Google, Sir.";
 
-        setTimeout(() => {
+        jarvisSpeak("Opening Google, Sir.",function(){
+
             window.location.href = "https://www.google.com/";
-        }, 1200);
+
+        });
 
         return;
 
     }
 
-    /* UNKNOWN COMMAND */
 
-    else {
+    /* UNKNOWN */
+
+    else{
 
         reply = "Sorry Sir, I cannot understand this command yet.";
 
     }
+
 
     voiceText.innerText =
         "You said: " + command +
@@ -275,51 +719,17 @@ function processCommand(command) {
 }
 
 
-/* =========================
-   START VOICE RECOGNITION
-========================= */
+/* SPEECH RECOGNITION */
 
-function startListening() {
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
-
-        voiceText.innerText =
-            "Voice recognition is not supported. Please use Chrome.";
-
-        return;
-
-    }
-
-    if (isListening) {
-
-        recognition.stop();
-        return;
-
-    }
-
-    try {
-
-        speechSynthesis.cancel();
-
-        recognition.start();
-
-    }
-
-    catch (error) {
-
-        voiceText.innerText =
-            "Microphone is busy. Please try again.";
-
-    }
-
-}
+let recognition = null;
+let isListening = false;
 
 
-/* =========================
-   RECOGNITION SETUP
-========================= */
-
-if (SpeechRecognition) {
+if(SpeechRecognition){
 
     recognition = new SpeechRecognition();
 
@@ -329,33 +739,32 @@ if (SpeechRecognition) {
     recognition.maxAlternatives = 5;
 
 
-    recognition.onstart = () => {
+    recognition.onstart = function(){
 
         isListening = true;
 
         micBtn.classList.add("listening");
         app.classList.add("listening");
 
-        status.innerText = "Listening";
+        statusText.innerText = "Listening";
 
         voiceText.innerText = "Listening...";
 
     };
 
 
-    recognition.onresult = (event) => {
+    recognition.onresult = function(event){
 
         const alternatives = event.results[0];
 
         let command = alternatives[0].transcript;
 
-        /* Check other recognition alternatives */
+        for(let i=0;i<alternatives.length;i++){
 
-        for (let i = 0; i < alternatives.length; i++) {
+            let alternative =
+                alternatives[i].transcript.toLowerCase();
 
-            let alternative = alternatives[i].transcript.toLowerCase();
-
-            if (
+            if(
                 alternative.includes("time") ||
                 alternative.includes("date") ||
                 alternative.includes("today") ||
@@ -363,7 +772,7 @@ if (SpeechRecognition) {
                 alternative.includes("google") ||
                 alternative.includes("समय") ||
                 alternative.includes("तारीख")
-            ) {
+            ){
 
                 command = alternatives[i].transcript;
                 break;
@@ -377,38 +786,40 @@ if (SpeechRecognition) {
     };
 
 
-    recognition.onerror = (event) => {
+    recognition.onerror = function(event){
 
         isListening = false;
 
         micBtn.classList.remove("listening");
         app.classList.remove("listening");
 
-        status.innerText = "Active";
+        statusText.innerText = "Active";
 
-        if (event.error === "not-allowed" ||
-            event.error === "service-not-allowed") {
+        if(
+            event.error === "not-allowed" ||
+            event.error === "service-not-allowed"
+        ){
 
             voiceText.innerText =
                 "Sir, please allow microphone permission.";
 
         }
 
-        else if (event.error === "no-speech") {
+        else if(event.error === "no-speech"){
 
             voiceText.innerText =
                 "Sir, I could not hear anything. Please try again.";
 
         }
 
-        else if (event.error === "network") {
+        else if(event.error === "network"){
 
             voiceText.innerText =
                 "Sir, internet connection is required.";
 
         }
 
-        else {
+        else{
 
             voiceText.innerText =
                 "Voice Error: " + event.error;
@@ -418,94 +829,131 @@ if (SpeechRecognition) {
     };
 
 
-    recognition.onend = () => {
+    recognition.onend = function(){
 
         isListening = false;
 
         micBtn.classList.remove("listening");
         app.classList.remove("listening");
 
-        if (status.innerText === "Listening") {
-            status.innerText = "Active";
+        if(statusText.innerText === "Listening"){
+
+            statusText.innerText = "Active";
+
         }
 
     };
 
+
+    /* MICROPHONE BUTTON */
+
+    micBtn.addEventListener("click",function(){
+
+        if(isListening){
+
+            recognition.stop();
+            return;
+
+        }
+
+        try{
+
+            speechSynthesis.cancel();
+
+            recognition.start();
+
+        }
+
+        catch(error){
+
+            voiceText.innerText =
+                "Sir, please try again.";
+
+        }
+
+    });
+
+
+    /* LANGUAGE SWITCH */
+
+    let pressTimer;
+    let longPress = false;
+
+    micBtn.addEventListener("pointerdown",function(){
+
+        longPress = false;
+
+        pressTimer = setTimeout(function(){
+
+            if(isListening) return;
+
+            longPress = true;
+
+            currentLanguage =
+                currentLanguage === "en-IN" ? "hi-IN" : "en-IN";
+
+            recognition.lang = currentLanguage;
+
+            let languageName =
+                currentLanguage === "en-IN" ? "English" : "Hindi";
+
+            voiceText.innerText =
+                "Language changed to " + languageName;
+
+            statusText.innerText = languageName;
+
+        },900);
+
+    });
+
+    micBtn.addEventListener("pointerup",function(){
+
+        clearTimeout(pressTimer);
+
+    });
+
+    micBtn.addEventListener("pointerleave",function(){
+
+        clearTimeout(pressTimer);
+
+    });
+
+    micBtn.addEventListener("click",function(event){
+
+        if(longPress){
+
+            event.stopImmediatePropagation();
+
+            longPress = false;
+
+        }
+
+    },true);
+
+}
+
+else{
+
+    micBtn.disabled = true;
+
+    voiceText.innerText =
+        "Voice recognition not supported. Please use Chrome.";
+
 }
 
 
-/* =========================
-   LANGUAGE SWITCH
-   HOLD MIC FOR 1 SECOND
-========================= */
+/* INITIAL MESSAGE */
 
-micBtn.addEventListener("pointerdown", () => {
-
-    longPressed = false;
-
-    longPressTimer = setTimeout(() => {
-
-        if (isListening || !recognition) {
-            return;
-        }
-
-        longPressed = true;
-
-        currentLanguage =
-            currentLanguage === "en-IN" ? "hi-IN" : "en-IN";
-
-        recognition.lang = currentLanguage;
-
-        let languageName =
-            currentLanguage === "en-IN" ? "English" : "Hindi";
-
-        voiceText.innerText =
-            "Language changed to " + languageName;
-
-        status.innerText = languageName;
-
-    }, 900);
-
-});
-
-
-micBtn.addEventListener("pointerup", () => {
-
-    clearTimeout(longPressTimer);
-
-});
-
-
-micBtn.addEventListener("pointerleave", () => {
-
-    clearTimeout(longPressTimer);
-
-});
-
-
-micBtn.addEventListener("click", () => {
-
-    if (longPressed) {
-        longPressed = false;
-        return;
-    }
-
-    startListening();
-
-});
-
-
-/* =========================
-   INITIAL STATUS
-========================= */
-
-window.addEventListener("load", () => {
+window.addEventListener("load",function(){
 
     voiceText.innerText =
         "JARVIS V1.0 READY. TAP MICROPHONE TO SPEAK.";
 
-    status.innerText = "Active";
+    statusText.innerText = "Active";
 
 });
 
 </script>
+
+</body>
+</html>
