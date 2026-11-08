@@ -322,6 +322,7 @@ body{
     font-size:11px;
     text-align:center;
     max-width:300px;
+    white-space:pre-line;
 }
 
 /* Bottom */
@@ -358,16 +359,12 @@ body{
 <div class="bg-glow"></div>
 <div class="bg-glow2"></div>
 
-<!-- Header -->
-
 <div class="header">
     <div class="logo">JARVIS</div>
     <div class="subtitle">
         Voice Assistant · <span id="status">Active</span>
     </div>
 </div>
-
-<!-- Orb -->
 
 <div class="orb-area">
     <div class="orb">
@@ -386,11 +383,7 @@ body{
     </div>
 </div>
 
-<!-- Waveform -->
-
 <div class="wave-container" id="wave"></div>
-
-<!-- Microphone -->
 
 <div class="voice-controls">
 
@@ -423,7 +416,7 @@ body{
 
 <script>
 
-/* Wave Animation */
+/* WAVE ANIMATION */
 
 const wave=document.getElementById("wave");
 
@@ -444,7 +437,7 @@ for(let i=0;i<95;i++){
     wave.appendChild(bar);
 }
 
-/* Voice Elements */
+/* VOICE ELEMENTS */
 
 const micBtn=document.getElementById("micBtn");
 const voiceText=document.getElementById("voiceText");
@@ -457,7 +450,7 @@ window.webkitSpeechRecognition;
 let recognition;
 let isListening=false;
 
-/* JARVIS SPEAK FUNCTION */
+/* SPEAK FUNCTION */
 
 function jarvisSpeak(message){
 
@@ -485,40 +478,25 @@ function jarvisSpeak(message){
 
 function processCommand(command){
 
-    let text=command.toLowerCase().trim();
+    let text=command
+        .toLowerCase()
+        .trim()
+        .replace(/[.,!?।]/g,"");
 
-    let reply="Sorry Sir, I did not understand that command.";
-
-    /* HELLO */
-
-    if(
-        text.includes("hello") ||
-        text.includes("hi jarvis") ||
-        text.includes("hey jarvis") ||
-        text.includes("नमस्ते")
-    ){
-        reply="Hello Sir! How can I help you?";
-    }
+    let reply="Sorry Sir, I cannot perform this command yet.";
 
     /* NAME */
 
-    else if(
+    if(
         text.includes("your name") ||
         text.includes("who are you") ||
         text.includes("naam kya") ||
-        text.includes("नाम क्या")
+        text.includes("नाम क्या") ||
+        text.includes("आप कौन")
     ){
+
         reply="I am JARVIS, your personal voice assistant.";
-    }
 
-    /* HOW ARE YOU */
-
-    else if(
-        text.includes("how are you") ||
-        text.includes("kaise ho") ||
-        text.includes("कैसे हो")
-    ){
-        reply="I am fine Sir. Thank you for asking.";
     }
 
     /* TIME */
@@ -526,7 +504,8 @@ function processCommand(command){
     else if(
         text.includes("time") ||
         text.includes("समय") ||
-        text.includes("kitne baje")
+        text.includes("kitne baje") ||
+        text.includes("कितने बजे")
     ){
 
         let now=new Date();
@@ -541,6 +520,7 @@ function processCommand(command){
         );
 
         reply="Sir, the current time is "+currentTime;
+
     }
 
     /* DATE */
@@ -550,7 +530,8 @@ function processCommand(command){
         text.includes("today") ||
         text.includes("tarikh") ||
         text.includes("तारीख") ||
-        text.includes("दिनांक")
+        text.includes("दिनांक") ||
+        text.includes("आज")
     ){
 
         let today=new Date();
@@ -566,48 +547,78 @@ function processCommand(command){
         );
 
         reply="Sir, today is "+currentDate;
+
     }
 
-    /* OPEN YOUTUBE */
+    /* YOUTUBE */
 
     else if(
-        text.includes("open youtube") ||
-        text.includes("youtube kholo") ||
-        text.includes("यूट्यूब खोलो")
+        text.includes("youtube") ||
+        text.includes("यूट्यूब")
     ){
 
         reply="Opening YouTube, Sir.";
 
-        voiceText.innerText="Opening YouTube...";
+        voiceText.innerText="JARVIS: "+reply;
 
         jarvisSpeak(reply);
 
         setTimeout(()=>{
             window.location.href="https://www.youtube.com/";
-        },1500);
+        },1800);
 
         return;
+
     }
 
-    /* OPEN GOOGLE */
+    /* GOOGLE */
 
     else if(
-        text.includes("open google") ||
-        text.includes("google kholo") ||
-        text.includes("गूगल खोलो")
+        text.includes("google") ||
+        text.includes("गूगल")
     ){
 
         reply="Opening Google, Sir.";
 
-        voiceText.innerText="Opening Google...";
+        voiceText.innerText="JARVIS: "+reply;
 
         jarvisSpeak(reply);
 
         setTimeout(()=>{
             window.location.href="https://www.google.com/";
-        },1500);
+        },1800);
 
         return;
+
+    }
+
+    /* HOW ARE YOU */
+
+    else if(
+        text.includes("how are you") ||
+        text.includes("kaise ho") ||
+        text.includes("कैसे हो") ||
+        text.includes("कैसा है")
+    ){
+
+        reply="I am fine Sir. Thank you for asking.";
+
+    }
+
+    /* HELLO */
+
+    else if(
+        text.includes("hello") ||
+        text.includes("hey") ||
+        text.includes("hi") ||
+        text.includes("हेलो") ||
+        text.includes("हैलो") ||
+        text.includes("नमस्ते") ||
+        text.includes("जार्विस")
+    ){
+
+        reply="Hello Sir! How can I help you?";
+
     }
 
     /* THANK YOU */
@@ -615,9 +626,12 @@ function processCommand(command){
     else if(
         text.includes("thank you") ||
         text.includes("thanks") ||
-        text.includes("धन्यवाद")
+        text.includes("धन्यवाद") ||
+        text.includes("शुक्रिया")
     ){
+
         reply="You are welcome Sir.";
+
     }
 
     /* GOOD MORNING */
@@ -626,7 +640,9 @@ function processCommand(command){
         text.includes("good morning") ||
         text.includes("शुभ प्रभात")
     ){
+
         reply="Good morning Sir. Have a wonderful day.";
+
     }
 
     /* GOOD NIGHT */
@@ -635,18 +651,19 @@ function processCommand(command){
         text.includes("good night") ||
         text.includes("शुभ रात्रि")
     ){
+
         reply="Good night Sir. Take care.";
+
     }
 
-    /* UNKNOWN COMMAND */
+    /* DISPLAY COMMAND AND REPLY */
 
-    else{
-        reply="Sorry Sir, I cannot perform this command yet.";
-    }
-
-    voiceText.innerText="JARVIS: "+reply;
+    voiceText.innerText=
+        "You said: "+command+
+        "\nJARVIS: "+reply;
 
     jarvisSpeak(reply);
+
 }
 
 /* VOICE RECOGNITION */
@@ -658,6 +675,7 @@ if(SpeechRecognition){
     recognition.lang="hi-IN";
     recognition.continuous=false;
     recognition.interimResults=false;
+    recognition.maxAlternatives=3;
 
     micBtn.onclick=()=>{
 
@@ -676,6 +694,7 @@ if(SpeechRecognition){
             voiceText.innerText="Please try again";
 
         }
+
     };
 
     recognition.onstart=()=>{
@@ -692,9 +711,7 @@ if(SpeechRecognition){
 
     recognition.onresult=(event)=>{
 
-        const command=event.results[0][0].transcript;
-
-        voiceText.innerText="You said: "+command;
+        let command=event.results[0][0].transcript;
 
         processCommand(command);
 
@@ -741,7 +758,8 @@ if(SpeechRecognition){
 }
 else{
 
-    voiceText.innerText="Voice recognition not supported in this browser";
+    voiceText.innerText=
+    "Voice recognition not supported in this browser";
 
 }
 
