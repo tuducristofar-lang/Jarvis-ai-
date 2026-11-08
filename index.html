@@ -3,66 +3,333 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b1c">
 <title>JARVIS AI V1.0</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
-background:radial-gradient(ellipse at center,#17234b,#080b1c 65%,#030510);
-color:white;font-family:Arial,sans-serif;min-height:100vh;
-display:flex;justify-content:center;align-items:center;
+min-height:100vh;
+background:radial-gradient(ellipse at 50% 38%,#17234b,#0b1028 38%,#050713);
+color:#eef7ff;
+font-family:Arial,sans-serif;
 overflow-x:hidden;
 }
-.app{width:100%;max-width:700px;text-align:center;padding:25px 15px}
-.logo{font-size:38px;letter-spacing:8px;text-shadow:0 0 20px #52eaff}
-.subtitle{font-size:10px;letter-spacing:4px;color:#8fa8d8;margin-top:8px}
-.version{display:inline-block;margin-top:12px;padding:6px 14px;border:1px solid #52eaff66;border-radius:20px;color:#52eaff;font-size:10px}
-.orb-wrap{height:280px;width:280px;margin:35px auto 10px;display:grid;place-items:center;position:relative}
-.glow{position:absolute;width:180px;height:180px;border-radius:50%;background:#17cfff;filter:blur(55px);opacity:.3}
-.orb{height:175px;width:175px;border-radius:50%;position:relative;background:radial-gradient(circle at 30% 25%,#c5ffff,#45dfff 8%,#167dbd 25%,#102b69 55%,#020617 85%);box-shadow:inset -15px -18px 30px #020616,inset 8px 8px 24px #b6faff88,0 0 35px #28dfff,0 0 80px #168bff55;animation:float 4s ease-in-out infinite}
-.orb:before{content:"";position:absolute;inset:12px;border:1px solid #9cf8ff88;border-radius:50%;box-shadow:0 0 18px #2ce5ff66}
-.ring{position:absolute;border:1px solid #54eaff88;border-radius:50%;box-shadow:0 0 12px #21cfff44}
-.r1{width:205px;height:205px;border-left-color:transparent;animation:spin 8s linear infinite}
-.r2{width:235px;height:235px;border-top-color:transparent;animation:spin 12s linear infinite reverse}
-.r3{width:265px;height:265px;border-left-color:transparent;border-bottom-color:transparent;animation:spin 17s linear infinite}
-.r4{width:220px;height:220px;border-right:2px solid #8af8ff;border-top-color:transparent;animation:spin 6s linear infinite reverse}
-.core{position:absolute;width:20px;height:20px;border-radius:50%;background:#e8ffff;box-shadow:0 0 15px 7px #56eaff,0 0 35px 15px #168bff88}
+
+body:before,body:after{
+content:"";
+position:fixed;
+width:320px;height:320px;
+border-radius:50%;
+filter:blur(95px);
+opacity:.18;
+pointer-events:none;
+}
+
+body:before{background:#167bff;top:8%;left:-150px}
+body:after{background:#00d9e9;right:-160px;bottom:0}
+
+.app{
+width:min(100%,760px);
+min-height:100vh;
+margin:auto;
+padding:26px 20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+position:relative;
+}
+
+header{text-align:center;margin-top:8px}
+
+.logo{
+font-size:clamp(28px,7vw,42px);
+font-weight:800;
+letter-spacing:8px;
+color:#eafaff;
+text-shadow:0 0 18px #49dfff;
+}
+
+.sub{
+font-size:11px;
+letter-spacing:4px;
+color:#8fa8d8;
+margin-top:8px;
+}
+
+.version{
+display:inline-block;
+margin-top:12px;
+padding:5px 12px;
+border:1px solid #4adff455;
+border-radius:30px;
+color:#65eaff;
+font-size:10px;
+letter-spacing:2px;
+}
+
+.orb-wrap{
+width:270px;height:270px;
+position:relative;
+margin:34px auto 12px;
+display:grid;
+place-items:center;
+}
+
+.orb-glow{
+position:absolute;
+width:190px;height:190px;
+border-radius:50%;
+background:#17cfff;
+filter:blur(55px);
+opacity:.22;
+}
+
+.orb{
+width:178px;height:178px;
+border-radius:50%;
+position:relative;
+background:radial-gradient(circle at 34% 27%,#b9faff,#4de8ff 5%,#167dbd 22%,#102b69 48%,#07112e 72%,#020617);
+box-shadow:inset -15px -18px 30px #020616,
+inset 8px 8px 24px #b6faff88,
+0 0 24px #28dfffaa,0 0 70px #168bff55;
+animation:float 4s ease-in-out infinite;
+}
+
+.orb:before{
+content:"";
+position:absolute;
+inset:12px;
+border-radius:50%;
+border:1px solid #9cf8ff88;
+box-shadow:0 0 18px #2ce5ff66;
+}
+
+.orb:after{
+content:"";
+position:absolute;
+width:55%;height:24%;
+top:15%;left:18%;
+border-radius:50%;
+background:#d8ffff55;
+filter:blur(12px);
+transform:rotate(-25deg);
+}
+
+.ring{
+position:absolute;
+border:1px solid #54eaff88;
+border-radius:50%;
+box-shadow:0 0 12px #21cfff44;
+}
+
+.r1{width:210px;height:210px;border-left-color:transparent;animation:spin 8s linear infinite}
+.r2{width:238px;height:238px;border-top-color:transparent;animation:spin 12s linear infinite reverse}
+.r3{width:260px;height:260px;border-left-color:transparent;border-bottom-color:transparent;animation:spin 17s linear infinite}
+.r4{width:224px;height:224px;border-right:2px solid #8af8ff;border-top-color:transparent;animation:spin 6s linear infinite reverse}
+
+.core{
+position:absolute;
+width:22px;height:22px;
+border-radius:50%;
+background:#e8ffff;
+box-shadow:0 0 12px 6px #56eaff,0 0 36px 15px #168bff88;
+z-index:2;
+}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes float{50%{transform:translateY(-8px)}}
-.wave{height:40px;display:flex;justify-content:center;align-items:center;gap:4px;margin:10px auto}
-.wave i{height:8px;width:3px;background:#56eaff;border-radius:5px}
-.listening .orb{box-shadow:0 0 40px #35ffbb,0 0 90px #16ffbb66}
-.speaking .orb{box-shadow:0 0 40px #a78bfa,0 0 90px #8b5cf666}
-.listening .wave i,.speaking .wave i{animation:wave .7s infinite alternate}
+
+.listening .orb{
+box-shadow:0 0 35px #35ffbb,0 0 90px #16ffbb66;
+}
+
+.speaking .orb{
+box-shadow:0 0 35px #a78bfa,0 0 90px #8b5cf666;
+}
+
+.wave{
+height:38px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:4px;
+margin:12px auto 20px;
+}
+
+.wave i{
+display:block;
+width:3px;height:7px;
+border-radius:5px;
+background:#56eaff;
+}
+
+.listening .wave i,.speaking .wave i{
+animation:wave .7s ease-in-out infinite alternate;
+}
+
+.wave i:nth-child(3n){animation-delay:.15s}
+.wave i:nth-child(2n){animation-delay:.3s}
+
 @keyframes wave{to{height:30px}}
-.status{font-size:12px;letter-spacing:3px;color:#65eaff;margin:12px}
-.response{min-height:45px;font-size:15px;line-height:1.6;color:#d9e8ff}
-.transcript{font-size:12px;color:#8192b9;margin-top:8px;min-height:18px}
-.controls{display:flex;justify-content:center;align-items:center;gap:14px;margin:25px 0;flex-wrap:wrap}
-.mic{height:62px;width:62px;border-radius:50%;border:1px solid #65eaff;background:linear-gradient(145deg,#1b3765,#09162e);color:#8ff7ff;box-shadow:0 0 22px #24cfff44;cursor:pointer;font-size:25px}
-.secondary{border:1px solid #47618e;background:#111c38;color:#c8d8f5;border-radius:22px;padding:11px 15px;cursor:pointer}
-.input-row{width:min(100%,540px);display:flex;gap:8px;margin:auto}
-input{flex:1;min-width:0;border:1px solid #32456e;border-radius:12px;background:#0a1228;color:white;padding:13px;outline:none}
-.send{border:0;border-radius:12px;padding:0 18px;background:linear-gradient(135deg,#2fcde8,#547bff);font-weight:bold}
-.panel{max-width:540px;margin:25px auto 0;padding:15px;border:1px solid #27385d;background:#0b1329;border-radius:15px}
-.panel h3{font-size:11px;letter-spacing:2px;color:#73eaff;margin-bottom:12px}
-.commands{display:flex;justify-content:center;flex-wrap:wrap;gap:7px}
-.commands span{font-size:11px;color:#b9c9e8;background:#14213d;border:1px solid #263d65;border-radius:20px;padding:7px 10px}
-footer{margin-top:25px;color:#536588;font-size:10px;letter-spacing:2px}
+
+.status{
+font-size:12px;
+letter-spacing:3px;
+color:#65eaff;
+margin-bottom:8px;
+}
+
+.response{
+min-height:48px;
+max-width:580px;
+text-align:center;
+color:#d9e8ff;
+font-size:15px;
+line-height:1.55;
+}
+
+.transcript{
+margin-top:8px;
+color:#8192b9;
+font-size:12px;
+text-align:center;
+min-height:18px;
+}
+
+.controls{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:14px;
+margin:25px 0 18px;
+flex-wrap:wrap;
+}
+
+.mic{
+width:62px;height:62px;
+border-radius:50%;
+border:1px solid #65eaff99;
+background:linear-gradient(145deg,#1b3765,#09162e);
+color:#8ff7ff;
+display:grid;
+place-items:center;
+box-shadow:0 0 22px #24cfff44;
+cursor:pointer;
+}
+
+.mic svg{width:25px;height:25px}
+
+.secondary{
+border:1px solid #47618e;
+background:#111c38;
+color:#c8d8f5;
+border-radius:22px;
+padding:11px 15px;
+font-size:12px;
+cursor:pointer;
+}
+
+.input-row{
+width:min(100%,560px);
+display:flex;
+gap:8px;
+}
+
+.input-row input{
+min-width:0;
+flex:1;
+border:1px solid #32456e;
+border-radius:12px;
+background:#0a1228;
+color:white;
+padding:13px 14px;
+outline:none;
+}
+
+.input-row button{
+border:0;
+border-radius:12px;
+padding:0 18px;
+background:linear-gradient(135deg,#2fcde8,#547bff);
+color:#041022;
+font-weight:bold;
+cursor:pointer;
+}
+
+.hint{
+font-size:11px;
+color:#7d8eaf;
+text-align:center;
+line-height:1.7;
+margin:15px 0 0;
+}
+
+.panel{
+width:min(100%,560px);
+margin-top:22px;
+border:1px solid #27385d;
+background:#0b1329aa;
+border-radius:15px;
+padding:14px 16px;
+}
+
+.panel h3{
+font-size:11px;
+letter-spacing:2px;
+color:#73eaff;
+margin-bottom:10px;
+}
+
+.commands{
+display:flex;
+flex-wrap:wrap;
+gap:7px;
+}
+
+.commands span{
+font-size:11px;
+color:#b9c9e8;
+background:#14213d;
+border:1px solid #263d65;
+border-radius:20px;
+padding:7px 10px;
+}
+
+footer{
+margin-top:auto;
+padding-top:25px;
+color:#536588;
+font-size:10px;
+letter-spacing:2px;
+text-align:center;
+}
+
+@media(max-width:420px){
+.app{padding:20px 15px}
+.orb-wrap{margin-top:28px;width:250px;height:250px}
+.r3{width:246px;height:246px}
+.r2{width:226px;height:226px}
+.r1{width:200px;height:200px}
+.r4{width:214px;height:214px}
+.orb{width:166px;height:166px}
+}
 </style>
 </head>
 
 <body>
+
 <div class="app" id="app">
 
 <header>
 <div class="logo">J.A.R.V.I.S</div>
-<div class="subtitle">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+<div class="sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
 <div class="version">PERSONAL ASSISTANT · V1.0</div>
 </header>
 
 <div class="orb-wrap">
-<div class="glow"></div>
+<div class="orb-glow"></div>
 <div class="ring r3"></div>
 <div class="ring r2"></div>
 <div class="ring r1"></div>
@@ -72,25 +339,45 @@ footer{margin-top:25px;color:#536588;font-size:10px;letter-spacing:2px}
 </div>
 
 <div class="wave" id="wave"></div>
+
 <div class="status" id="status">SYSTEM READY</div>
-<div class="response" id="response">Hello Sir. JARVIS is ready. Tap the microphone and give a command.</div>
-<div class="transcript" id="transcript">Waiting for your command…</div>
+
+<div class="response" id="response">
+Hello Sir. JARVIS is ready. Tap the microphone and give a command.
+</div>
+
+<div class="transcript" id="transcript">
+Waiting for your command…
+</div>
 
 <div class="controls">
-<button class="mic" id="micBtn">🎙</button>
+
+<button class="mic" id="micBtn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+<rect x="9" y="2" width="6" height="13" rx="3"></rect>
+<path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path>
+</svg>
+</button>
+
 <button class="secondary" id="stopBtn">■ Stop Voice</button>
 <button class="secondary" id="langBtn">Language: Auto</button>
+
 </div>
 
 <div class="input-row">
-<input id="textInput" placeholder="Type a command...">
-<button class="send" id="sendBtn">SEND</button>
+<input id="textInput" type="text" placeholder="Type a command...">
+<button id="sendBtn">SEND</button>
+</div>
+
+<div class="hint">
+Tap the mic and speak clearly · Allow microphone permission
 </div>
 
 <div class="panel">
 <h3>AVAILABLE COMMANDS</h3>
 <div class="commands">
 <span>What is the time?</span>
+<span>आज का समय</span>
 <span>आज की तारीख</span>
 <span>Open Google</span>
 <span>Open YouTube</span>
@@ -101,172 +388,631 @@ footer{margin-top:25px;color:#536588;font-size:10px;letter-spacing:2px}
 </div>
 
 <footer>JARVIS AI · PERSONAL WEB ASSISTANT</footer>
+
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const app=$("app"),status=$("status"),response=$("response"),transcript=$("transcript");
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let recognition=null,listening=false,languageMode=0,voices=[];
+"use strict";
 
-function setStatus(s){
-status.textContent=s;
+const $ = id => document.getElementById(id);
+
+const app = $("app");
+const statusEl = $("status");
+const responseEl = $("response");
+const transcriptEl = $("transcript");
+
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+let listening = false;
+let languageMode = 0;
+let voices = [];
+
+function setStatus(value){
+statusEl.textContent = value;
+
 app.classList.remove("listening","speaking");
-if(s==="LISTENING")app.classList.add("listening");
-if(s==="SPEAKING")app.classList.add("speaking");
+
+if(value === "LISTENING"){
+app.classList.add("listening");
 }
 
-function getVoices(){
-voices=window.speechSynthesis?window.speechSynthesis.getVoices():[];
+if(value === "SPEAKING"){
+app.classList.add("speaking");
 }
+}
+
+function loadVoices(){
+voices = window.speechSynthesis
+? window.speechSynthesis.getVoices()
+: [];
+}
+
 if("speechSynthesis" in window){
-getVoices();
-window.speechSynthesis.onvoiceschanged=getVoices;
+loadVoices();
+window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
 function speak(text,lang){
-if(!window.speechSynthesis){response.textContent=text;return;}
-window.speechSynthesis.cancel();
-response.textContent=text;
-setStatus("SPEAKING");
-let u=new SpeechSynthesisUtterance(text);
-u.lang=lang||(/[\u0900-\u097F]/.test(text)?"hi-IN":"en-IN");
-u.rate=.92;
-u.pitch=.82;
-u.volume=1;
-let prefix=u.lang.slice(0,2).toLowerCase();
-let matching=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith(prefix));
-let voice=matching.find(v=>/male|david|ravi|hemant|madhur/i.test(v.name))||matching[0];
-if(voice)u.voice=voice;
-u.onend=()=>{if(!listening)setStatus("SYSTEM READY");};
-u.onerror=()=>{if(!listening)setStatus("SYSTEM READY");};
-window.speechSynthesis.speak(u);
+
+if(!("speechSynthesis" in window)){
+responseEl.textContent = text;
+return;
 }
 
-function calculate(expr){
-let s=expr.replace(/×/g,"*").replace(/÷/g,"/").replace(/plus/gi,"+").replace(/minus/gi,"-").replace(/times/gi,"*").replace(/divided by/gi,"/");
-if(!/^[\d\s+\-*/().%]+$/.test(s))throw Error();
-let i=0;
+window.speechSynthesis.cancel();
+
+responseEl.textContent = text;
+setStatus("SPEAKING");
+
+const utter = new SpeechSynthesisUtterance(text);
+
+utter.lang = lang ||
+(/[\u0900-\u097F]/.test(text) ? "hi-IN" : "en-IN");
+
+utter.rate = 0.92;
+utter.pitch = 0.82;
+utter.volume = 1;
+
+const prefix = utter.lang.slice(0,2).toLowerCase();
+
+const matching = voices.filter(v =>
+v.lang && v.lang.toLowerCase().startsWith(prefix)
+);
+
+const preferred =
+matching.find(v => /male|david|ravi|hemant|madhur/i.test(v.name))
+|| matching[0];
+
+if(preferred) utter.voice = preferred;
+
+utter.onend = () => {
+if(!listening) setStatus("SYSTEM READY");
+};
+
+utter.onerror = () => {
+if(!listening) setStatus("SYSTEM READY");
+};
+
+window.speechSynthesis.speak(utter);
+}
+
+function calculate(expression){
+
+let s = expression
+.replace(/×/g,"*")
+.replace(/÷/g,"/")
+.replace(/plus/gi,"+")
+.replace(/minus/gi,"-")
+.replace(/multiplied by/gi,"*")
+.replace(/times/gi,"*")
+.replace(/divided by/gi,"/");
+
+if(!/^[\d\s+\-*/().%]+$/.test(s)){
+throw Error("Invalid calculation");
+}
+
+let i = 0;
+
 function atom(){
-while(s[i]===" ")i++;
-if(s[i]==="+"){i++;return atom();}
-if(s[i]==="-"){i++;return -atom();}
-if(s[i]==="("){i++;let n=add();while(s[i]===" ")i++;if(s[i++]!==")")throw Error();return n;}
-let start=i;while(/[0-9.]/.test(s[i]||""))i++;
-if(start===i)throw Error();
-return Number(s.slice(start,i));
+
+while(s[i] === " ") i++;
+
+if(s[i] === "+"){
+i++;
+return atom();
 }
-function mul(){
-let n=atom();
-while(true){while(s[i]===" ")i++;let op=s[i];if(!["*","/","%"].includes(op))break;i++;let b=atom();if((op==="/"||op==="%")&&b===0)throw Error();n=op==="*"?n*b:op==="/"?n/b:n%b;}
+
+if(s[i] === "-"){
+i++;
+return -atom();
+}
+
+if(s[i] === "("){
+i++;
+let n = add();
+
+while(s[i] === " ") i++;
+
+if(s[i++] !== ")") throw Error();
+
 return n;
 }
+
+let start = i;
+
+while(/[0-9.]/.test(s[i] || "")) i++;
+
+if(start === i) throw Error();
+
+let n = Number(s.slice(start,i));
+
+if(!Number.isFinite(n)) throw Error();
+
+return n;
+}
+
+function multiply(){
+
+let n = atom();
+
+while(true){
+
+while(s[i] === " ") i++;
+
+let op = s[i];
+
+if(op !== "*" && op !== "/" && op !== "%") break;
+
+i++;
+
+let b = atom();
+
+if((op === "/" || op === "%") && b === 0){
+throw Error("Cannot divide by zero");
+}
+
+n = op === "*" ? n*b : op === "/" ? n/b : n%b;
+
+}
+
+return n;
+}
+
 function add(){
-let n=mul();
-while(true){while(s[i]===" ")i++;let op=s[i];if(op!=="+"&&op!=="-")break;i++;let b=mul();n=op==="+"?n+b:n-b;}
+
+let n = multiply();
+
+while(true){
+
+while(s[i] === " ") i++;
+
+let op = s[i];
+
+if(op !== "+" && op !== "-") break;
+
+i++;
+
+let b = multiply();
+
+n = op === "+" ? n+b : n-b;
+
+}
+
 return n;
 }
-let result=add();while(s[i]===" ")i++;
-if(i!==s.length||!Number.isFinite(result))throw Error();
+
+let result = add();
+
+while(s[i] === " ") i++;
+
+if(i !== s.length || !Number.isFinite(result)){
+throw Error("Invalid result");
+}
+
 return Number(result.toFixed(8));
 }
 
 function command(raw){
-let q=raw.toLowerCase().replace(/[?!.,]/g," ").replace(/\s+/g," ").trim();
-if(!q)return;
-let hi=/[\u0900-\u097F]/.test(raw),lang=hi?"hi-IN":"en-IN";
-transcript.textContent="You said: "+raw;
 
-if(/^(stop|quiet|be quiet|stop speaking|chup|band karo|रुको|चुप|बंद करो)/i.test(q)){
-window.speechSynthesis.cancel();setStatus("SYSTEM READY");response.textContent="Voice stopped.";return;
-}
-if(/\b(help|commands|what can you do)\b/.test(q)||q.includes("मदद")){
-speak(hi?"मैं समय और तारीख बता सकता हूँ, Google और YouTube खोल सकता हूँ और गणना कर सकता हूँ।":"I can tell time and date, open Google and YouTube, and calculate basic maths.",lang);return;
-}
-if(/\b(hello|hi jarvis|hey jarvis|good morning|good evening)\b/.test(q)||q.includes("नमस्ते")||q.includes("हेलो")){
-speak(hi?"नमस्ते सर! मैं आपकी मदद के लिए तैयार हूँ।":"Hello Sir. JARVIS is online and ready to help.",lang);return;
-}
-if(/\b(time|समय|टाइम)\b/.test(q)){
-let t=new Intl.DateTimeFormat(hi?"hi-IN":"en-IN",{hour:"numeric",minute:"2-digit",hour12:true,timeZone:"Asia/Kolkata"}).format(new Date());
-speak(hi?"अभी समय है "+t:"The current time is "+t,lang);return;
-}
-if(/\b(date|today|day|तारीख|आज|दिनांक)\b/.test(q)){
-let d=new Intl.DateTimeFormat(hi?"hi-IN":"en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date());
-speak(hi?"आज "+d+" है।":"Today is "+d+".",lang);return;
-}
-if(/\b(youtube|यूट्यूब)\b/.test(q)){
-let query=raw.replace(/.*?(youtube|यूट्यूब)\s*/i,"").trim();
-speak(hi?"YouTube खोल रहा हूँ।":"Opening YouTube.",lang);
-setTimeout(()=>location.href=query?"https://www.youtube.com/results?search_query="+encodeURIComponent(query):"https://www.youtube.com/",400);return;
-}
-if(/\b(open|search|google|खोल|सर्च|गूगल)\b/.test(q)){
-let query=raw.replace(/^(please\s*)?(open|search|google|jarvis|please)\s*/i,"").trim();
-if(!query||/^google$/i.test(query)||query==="गूगल"){
-speak(hi?"Google खोल रहा हूँ।":"Opening Google.",lang);
-setTimeout(()=>location.href="https://www.google.com/",400);
-}else{
-speak(hi?"Google पर खोज रहा हूँ।":"Searching Google for "+query,lang);
-setTimeout(()=>location.href="https://www.google.com/search?q="+encodeURIComponent(query),400);
-}
-return;
-}
-if(/\b(calculate|calculator|what is|कितना|गणना|जोड़|गुणा)\b/.test(q)||/[\d]\s*[+\-×÷*/%]\s*[\d]/.test(q)){
-let expr=raw.replace(/^(.*?)(calculate|calculator|what is|कितना|गणना|जोड़|गुणा)\s*/i,"").replace(/[?=]/g,"").trim();
-if(!expr)expr=raw;
-try{
-let ans=calculate(expr);
-speak(hi?"जवाब है "+ans:"The answer is "+ans,lang);
-}catch(e){
-speak(hi?"माफ़ कीजिए, यह गणना समझ नहीं आई।":"Sorry, I couldn't calculate that.",lang);
-}
-return;
-}
-speak(hi?"माफ़ कीजिए सर, यह कमांड समझ नहीं आया। Help बोलकर कमांड सुनें।":"Sorry Sir, I didn't understand that command. Say Help to hear available commands.",lang);
-}
+const q = raw.toLowerCase()
+.replace(/[?!.,]/g," ")
+.replace(/\s+/g," ")
+.trim();
 
-function listen(){
-if(!SR){speak("Speech recognition is not supported in this browser. Please use Chrome.","en-IN");return;}
-if(listening){recognition.stop();return;}
-recognition=new SR();
-recognition.continuous=false;
-recognition.interimResults=false;
-recognition.lang=languageMode===1?"hi-IN":languageMode===2?"en-IN":"hi-IN";
-listening=true;
-setStatus("LISTENING");
-transcript.textContent="Listening…";
-recognition.onresult=e=>command(e.results[0][0].transcript);
-recognition.onerror=e=>{
-response.textContent=e.error==="not-allowed"?"Microphone permission denied. Allow mic access.":e.error==="no-speech"?"No speech detected. Try again.":"Voice error: "+e.error;
-};
-recognition.onend=()=>{listening=false;if(status.textContent==="LISTENING")setStatus("SYSTEM READY");};
-try{recognition.start();}catch(e){listening=false;setStatus("SYSTEM READY");response.textContent="Could not start microphone. Try again.";}
-}
+if(!q) return;
 
-$("micBtn").onclick=listen;
-$("stopBtn").onclick=()=>{
+const hindi = /[\u0900-\u097F]/.test(raw);
+
+const lang = hindi ? "hi-IN" : "en-IN";
+
+transcriptEl.textContent = "You said: " + raw;
+
+
+// STOP VOICE
+if(
+q.includes("stop speaking") ||
+q === "stop" ||
+q.includes("quiet") ||
+q.includes("chup") ||
+q.includes("band karo") ||
+q.includes("रुको") ||
+q.includes("चुप") ||
+q.includes("बंद करो")
+){
+
 window.speechSynthesis.cancel();
-if(recognition&&listening)recognition.stop();
-listening=false;setStatus("SYSTEM READY");response.textContent="Voice stopped.";
-};
-$("langBtn").onclick=()=>{
-languageMode=(languageMode+1)%3;
-$("langBtn").textContent="Language: "+["Auto","Hindi","English"][languageMode];
-response.textContent=["Auto mode selected.","Hindi mode selected.","English mode selected."][languageMode];
-};
-function send(){
-let value=$("textInput").value.trim();
-if(!value)return;
-$("textInput").value="";
-command(value);
+
+setStatus("SYSTEM READY");
+
+responseEl.textContent = "Voice stopped.";
+
+return;
 }
-$("sendBtn").onclick=send;
-$("textInput").onkeydown=e=>{if(e.key==="Enter")send();};
+
+
+// HELP
+if(
+q.includes("help") ||
+q.includes("commands") ||
+q.includes("what can you do") ||
+q.includes("मदद") ||
+q.includes("क्या कर सकते")
+){
+
+speak(
+hindi
+? "मैं समय और तारीख बता सकता हूँ, Google और YouTube खोल सकता हूँ और गणना कर सकता हूँ।"
+: "I can tell the time and date, open Google and YouTube, and calculate basic maths.",
+lang
+);
+
+return;
+}
+
+
+// GREETING
+if(
+q.includes("hello") ||
+q.includes("hi jarvis") ||
+q.includes("hey jarvis") ||
+q.includes("good morning") ||
+q.includes("good evening") ||
+q.includes("नमस्ते") ||
+q.includes("हेलो")
+){
+
+speak(
+hindi
+? "नमस्ते सर! मैं आपकी मदद के लिए तैयार हूँ।"
+: "Hello Sir. JARVIS is online and ready to help.",
+lang
+);
+
+return;
+}
+
+
+// TIME - FIXED
+if(
+q.includes("time") ||
+q.includes("समय") ||
+q.includes("टाइम") ||
+q.includes("कितने बजे") ||
+q.includes("बजे हैं")
+){
+
+const time = new Intl.DateTimeFormat(
+hindi ? "hi-IN" : "en-IN",
+{
+hour:"numeric",
+minute:"2-digit",
+hour12:true,
+timeZone:"Asia/Kolkata"
+}
+).format(new Date());
+
+speak(
+hindi
+? "अभी समय है " + time
+: "The current time is " + time,
+lang
+);
+
+return;
+}
+
+
+// DATE - FIXED
+if(
+q.includes("date") ||
+q.includes("today") ||
+q.includes("day") ||
+q.includes("तारीख") ||
+q.includes("आज") ||
+q.includes("दिनांक")
+){
+
+const date = new Intl.DateTimeFormat(
+hindi ? "hi-IN" : "en-IN",
+{
+weekday:"long",
+day:"numeric",
+month:"long",
+year:"numeric",
+timeZone:"Asia/Kolkata"
+}
+).format(new Date());
+
+speak(
+hindi
+? "आज " + date + " है।"
+: "Today is " + date + ".",
+lang
+);
+
+return;
+}
+
+
+// YOUTUBE
+if(
+q.includes("youtube") ||
+q.includes("यूट्यूब")
+){
+
+const query = raw.replace(
+/.*?(youtube|यूट्यूब)\s*/i,
+""
+).trim();
+
+speak(
+hindi ? "YouTube खोल रहा हूँ।" : "Opening YouTube.",
+lang
+);
+
+setTimeout(() => {
+
+location.href = query
+? "https://www.youtube.com/results?search_query=" + encodeURIComponent(query)
+: "https://www.youtube.com/";
+
+},500);
+
+return;
+}
+
+
+// GOOGLE SEARCH
+if(
+q.includes("google") ||
+q.includes("गूगल") ||
+q.includes("search") ||
+q.includes("सर्च")
+){
+
+let query = raw.replace(
+/^(please\s*)?(open|search|google|jarvis|please)\s*/i,
+""
+).trim();
+
+if(!query || query.toLowerCase() === "google" || query === "गूगल"){
+
+speak(
+hindi ? "Google खोल रहा हूँ।" : "Opening Google.",
+lang
+);
+
+setTimeout(() => {
+location.href = "https://www.google.com/";
+},500);
+
+}else{
+
+speak(
+hindi ? "Google पर खोज रहा हूँ।" : "Searching Google for " + query,
+lang
+);
+
+setTimeout(() => {
+location.href = "https://www.google.com/search?q=" + encodeURIComponent(query);
+},500);
+
+}
+
+return;
+}
+
+
+// CALCULATOR
+if(
+q.includes("calculate") ||
+q.includes("calculator") ||
+q.includes("what is") ||
+q.includes("कितना") ||
+q.includes("गणना") ||
+q.includes("जोड़") ||
+q.includes("गुणा") ||
+/[\d]\s*[+\-×÷*/%]\s*[\d]/.test(q)
+){
+
+let expression = raw
+.replace(/^(.*?)(calculate|calculator|what is|कितना|गणना|जोड़|गुणा)\s*/i,"")
+.replace(/[?=]/g,"")
+.trim();
+
+if(!expression) expression = raw;
+
+try{
+
+const answer = calculate(expression);
+
+speak(
+hindi ? "जवाब है " + answer : "The answer is " + answer,
+lang
+);
+
+}catch(error){
+
+speak(
+hindi
+? "माफ़ कीजिए, यह गणना समझ नहीं आई।"
+: "Sorry, I couldn't calculate that.",
+lang
+);
+
+}
+
+return;
+}
+
+
+// UNKNOWN COMMAND
+speak(
+hindi
+? "माफ़ कीजिए सर, यह कमांड समझ नहीं आया। Help बोलकर कमांड की सूची सुनें।"
+: "Sorry Sir, I didn't understand that command. Say Help to hear available commands.",
+lang
+);
+
+}
+
+
+// MICROPHONE
+function startListening(){
+
+if(!SpeechRecognition){
+
+speak(
+"Speech recognition is not supported in this browser. Please use Chrome.",
+"en-IN"
+);
+
+return;
+}
+
+if(listening){
+
+recognition.stop();
+
+return;
+}
+
+recognition = new SpeechRecognition();
+
+recognition.continuous = false;
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
+
+recognition.lang =
+languageMode === 1 ? "hi-IN" :
+languageMode === 2 ? "en-IN" :
+"hi-IN";
+
+listening = true;
+
+setStatus("LISTENING");
+
+transcriptEl.textContent = "Listening…";
+
+recognition.onresult = event => {
+
+const spokenText = event.results[0][0].transcript;
+
+command(spokenText);
+
+};
+
+recognition.onerror = event => {
+
+responseEl.textContent =
+event.error === "not-allowed"
+? "Microphone permission denied. Allow microphone access."
+: event.error === "no-speech"
+? "No speech detected. Please try again."
+: "Voice error: " + event.error;
+
+};
+
+recognition.onend = () => {
+
+listening = false;
+
+app.classList.remove("listening");
+
+if(statusEl.textContent === "LISTENING"){
+setStatus("SYSTEM READY");
+}
+
+};
+
+try{
+
+recognition.start();
+
+}catch(error){
+
+listening = false;
+
+setStatus("SYSTEM READY");
+
+responseEl.textContent = "Could not start microphone. Try again.";
+
+}
+
+}
+
+
+// BUTTONS
+$("micBtn").addEventListener("click",startListening);
+
+$("stopBtn").addEventListener("click",() => {
+
+window.speechSynthesis.cancel();
+
+if(recognition && listening){
+recognition.stop();
+}
+
+listening = false;
+
+setStatus("SYSTEM READY");
+
+responseEl.textContent = "Voice stopped.";
+
+});
+
+$("langBtn").addEventListener("click",() => {
+
+languageMode = (languageMode + 1) % 3;
+
+const names = ["Auto","Hindi","English"];
+
+$("langBtn").textContent = "Language: " + names[languageMode];
+
+responseEl.textContent = names[languageMode] + " mode selected.";
+
+});
+
+function sendText(){
+
+const value = $("textInput").value.trim();
+
+if(!value) return;
+
+$("textInput").value = "";
+
+command(value);
+
+}
+
+$("sendBtn").addEventListener("click",sendText);
+
+$("textInput").addEventListener("keydown",event => {
+
+if(event.key === "Enter"){
+sendText();
+}
+
+});
+
+
+// WAVEFORM
+const wave = $("wave");
 
 for(let i=0;i<31;i++){
-let bar=document.createElement("i");
-bar.style.height=(6+(i%5)*2)+"px";
-$("wave").appendChild(bar);
+
+const bar = document.createElement("i");
+
+bar.style.height = (6 + (i%5)*2) + "px";
+
+wave.appendChild(bar);
+
 }
+
+})();
 </script>
+
 </body>
 </html>
