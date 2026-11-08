@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS AI</title>
+<title>JARVIS AI V1.0</title>
 
 <style>
 *{
@@ -34,8 +34,6 @@ body{
     );
 }
 
-/* Background */
-
 .bg-glow{
     position:absolute;
     width:350px;
@@ -45,6 +43,7 @@ body{
     opacity:.25;
     top:25%;
     left:10%;
+    pointer-events:none;
 }
 
 .bg-glow2{
@@ -56,9 +55,8 @@ body{
     opacity:.18;
     top:40%;
     right:0;
+    pointer-events:none;
 }
-
-/* Header */
 
 .header{
     margin-top:65px;
@@ -88,8 +86,6 @@ body{
     color:#36eaff;
 }
 
-/* Orb */
-
 .orb-area{
     position:absolute;
     top:23%;
@@ -105,7 +101,6 @@ body{
     width:225px;
     height:225px;
     border-radius:50%;
-
     background:radial-gradient(
         circle at 35% 30%,
         rgba(255,255,255,.22),
@@ -113,16 +108,12 @@ body{
         rgba(0,210,255,.12) 65%,
         transparent 75%
     );
-
     box-shadow:
         0 0 20px #9d65ff,
         0 0 55px rgba(122,75,255,.7),
         inset 0 0 30px rgba(120,180,255,.4);
-
     animation:orbPulse 4s ease-in-out infinite alternate;
 }
-
-/* Rings */
 
 .ring{
     position:absolute;
@@ -163,8 +154,6 @@ body{
     opacity:.5;
     animation:rotate2 15s linear infinite;
 }
-
-/* Orb Lights */
 
 .orb-light{
     position:absolute;
@@ -213,8 +202,6 @@ body{
     box-shadow:inset 0 0 30px rgba(0,220,255,.15);
 }
 
-/* Animations */
-
 @keyframes rotate1{
     from{transform:rotate(0deg)}
     to{transform:rotate(360deg)}
@@ -236,7 +223,12 @@ body{
     }
 }
 
-/* Waveform */
+/* VOICE ANIMATION */
+
+.app.listening .orb,
+.app.speaking .orb{
+    animation:orbPulse .7s ease-in-out infinite alternate;
+}
 
 .wave-container{
     position:absolute;
@@ -268,6 +260,12 @@ body{
     background:linear-gradient(to top,#9d65ff,#39eaff);
     box-shadow:0 0 8px #46dfff;
     animation:wave 1s ease-in-out infinite alternate;
+    animation-play-state:paused;
+}
+
+.app.listening .bar,
+.app.speaking .bar{
+    animation-play-state:running;
 }
 
 @keyframes wave{
@@ -281,7 +279,7 @@ body{
     }
 }
 
-/* Microphone */
+/* MICROPHONE */
 
 .voice-controls{
     position:absolute;
@@ -308,7 +306,6 @@ body{
 }
 
 #micBtn:active{
-    background:rgba(70,80,150,.7);
     transform:scale(.94);
 }
 
@@ -323,9 +320,8 @@ body{
     text-align:center;
     max-width:300px;
     white-space:pre-line;
+    line-height:1.5;
 }
-
-/* Bottom */
 
 .bottom{
     position:absolute;
@@ -336,9 +332,9 @@ body{
 }
 
 @media(max-height:700px){
-    .header{margin-top:75px}
+    .header{margin-top:45px}
     .orb-area{
-        top:22%;
+        top:20%;
         transform:scale(.8);
     }
     .wave-container{bottom:105px}
@@ -354,7 +350,7 @@ body{
 
 <body>
 
-<div class="app">
+<div class="app" id="app">
 
 <div class="bg-glow"></div>
 <div class="bg-glow2"></div>
@@ -368,18 +364,14 @@ body{
 
 <div class="orb-area">
     <div class="orb">
-
         <div class="ring ring1"></div>
         <div class="ring ring2"></div>
         <div class="ring ring3"></div>
         <div class="ring ring4"></div>
-
         <div class="orb-light"></div>
         <div class="orb-light2"></div>
         <div class="orb-light3"></div>
-
         <div class="orb-core"></div>
-
     </div>
 </div>
 
@@ -387,36 +379,43 @@ body{
 
 <div class="voice-controls">
 
-    <button id="micBtn" type="button">
+<button id="micBtn" type="button">
 
-        <svg viewBox="0 0 24 24"
-             width="23" height="23"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.8"
-             stroke-linecap="round">
+<svg viewBox="0 0 24 24"
+width="23" height="23"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round">
 
-            <rect x="9" y="2" width="6" height="13" rx="3"/>
-            <path d="M5 11a7 7 0 0 0 14 0"/>
-            <path d="M12 18v4M9 22h6"/>
+<rect x="9" y="2" width="6" height="13" rx="3"/>
+<path d="M5 11a7 7 0 0 0 14 0"/>
+<path d="M12 18v4M9 22h6"/>
 
-        </svg>
+</svg>
 
-    </button>
+</button>
 
-    <p id="voiceText">Tap microphone and speak</p>
+<p id="voiceText">Tap microphone and speak</p>
 
 </div>
 
 <div class="bottom">
-    JARVIS INTELLIGENCE SYSTEM · V1.0
+JARVIS INTELLIGENCE SYSTEM · V1.0
 </div>
 
 </div>
 
 <script>
 
-/* WAVE ANIMATION */
+/* ELEMENTS */
+
+const app=document.getElementById("app");
+const micBtn=document.getElementById("micBtn");
+const voiceText=document.getElementById("voiceText");
+const status=document.getElementById("status");
+
+/* WAVEFORM */
 
 const wave=document.getElementById("wave");
 
@@ -435,55 +434,70 @@ for(let i=0;i<95;i++){
     bar.style.animationDelay=(Math.random()*.8)+"s";
 
     wave.appendChild(bar);
+
 }
 
-/* VOICE ELEMENTS */
-
-const micBtn=document.getElementById("micBtn");
-const voiceText=document.getElementById("voiceText");
-const status=document.getElementById("status");
-
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-let recognition;
-let isListening=false;
-
-/* SPEAK FUNCTION */
+/* SPEECH */
 
 function jarvisSpeak(message){
+
+    if(!("speechSynthesis" in window)){
+
+        return;
+
+    }
 
     speechSynthesis.cancel();
 
     const speech=new SpeechSynthesisUtterance(message);
 
-    speech.lang="hi-IN";
+    speech.lang="en-IN";
     speech.rate=1;
     speech.pitch=1;
     speech.volume=1;
 
     speech.onstart=()=>{
+
+        app.classList.add("speaking");
         status.innerText="Speaking";
+
     };
 
     speech.onend=()=>{
+
+        app.classList.remove("speaking");
         status.innerText="Active";
+
+    };
+
+    speech.onerror=()=>{
+
+        app.classList.remove("speaking");
+        status.innerText="Active";
+
     };
 
     speechSynthesis.speak(speech);
+
+}
+
+/* RESPONSE */
+
+function respond(message){
+
+    voiceText.innerText="JARVIS: "+message;
+
+    jarvisSpeak(message);
+
 }
 
 /* COMMAND SYSTEM */
 
 function processCommand(command){
 
-    let text=command
-        .toLowerCase()
-        .trim()
-        .replace(/[.,!?।]/g,"");
+    let text=command.toLowerCase().trim();
 
-    let reply="Sorry Sir, I cannot perform this command yet.";
+    let reply="Sorry Sir, I don't understand that command yet.";
 
     /* NAME */
 
@@ -510,16 +524,12 @@ function processCommand(command){
 
         let now=new Date();
 
-        let currentTime=now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                hour12:true
-            }
-        );
-
-        reply="Sir, the current time is "+currentTime;
+        reply="Sir, the current time is "+
+        now.toLocaleTimeString("en-IN",{
+            hour:"2-digit",
+            minute:"2-digit",
+            hour12:true
+        });
 
     }
 
@@ -534,19 +544,13 @@ function processCommand(command){
         text.includes("आज")
     ){
 
-        let today=new Date();
-
-        let currentDate=today.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                day:"numeric",
-                month:"long",
-                year:"numeric"
-            }
-        );
-
-        reply="Sir, today is "+currentDate;
+        reply="Sir, today is "+
+        new Date().toLocaleDateString("en-IN",{
+            weekday:"long",
+            day:"numeric",
+            month:"long",
+            year:"numeric"
+        });
 
     }
 
@@ -557,15 +561,11 @@ function processCommand(command){
         text.includes("यूट्यूब")
     ){
 
-        reply="Opening YouTube, Sir.";
-
-        voiceText.innerText="JARVIS: "+reply;
-
-        jarvisSpeak(reply);
+        respond("Opening YouTube, Sir.");
 
         setTimeout(()=>{
-            window.location.href="https://www.youtube.com/";
-        },1800);
+            window.open("https://www.youtube.com/","_blank");
+        },1000);
 
         return;
 
@@ -578,15 +578,11 @@ function processCommand(command){
         text.includes("गूगल")
     ){
 
-        reply="Opening Google, Sir.";
-
-        voiceText.innerText="JARVIS: "+reply;
-
-        jarvisSpeak(reply);
+        respond("Opening Google, Sir.");
 
         setTimeout(()=>{
-            window.location.href="https://www.google.com/";
-        },1800);
+            window.open("https://www.google.com/","_blank");
+        },1000);
 
         return;
 
@@ -605,7 +601,7 @@ function processCommand(command){
 
     }
 
-    /* HELLO */
+    /* GREETING */
 
     else if(
         text.includes("hello") ||
@@ -656,17 +652,23 @@ function processCommand(command){
 
     }
 
-    /* DISPLAY COMMAND AND REPLY */
-
     voiceText.innerText=
-        "You said: "+command+
-        "\nJARVIS: "+reply;
+    "You said: "+command+
+    "\nJARVIS: "+reply;
 
     jarvisSpeak(reply);
 
 }
 
 /* VOICE RECOGNITION */
+
+const SpeechRecognition=
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+let recognition=null;
+let isListening=false;
+let busy=false;
 
 if(SpeechRecognition){
 
@@ -677,31 +679,39 @@ if(SpeechRecognition){
     recognition.interimResults=false;
     recognition.maxAlternatives=3;
 
-    micBtn.onclick=()=>{
+    micBtn.addEventListener("click",()=>{
 
         if(isListening){
+
             recognition.stop();
             return;
+
+        }
+
+        if(busy){
+
+            return;
+
         }
 
         try{
 
             recognition.start();
 
+        }catch(error){
+
+            voiceText.innerText="Please try again.";
+
         }
-        catch(error){
 
-            voiceText.innerText="Please try again";
-
-        }
-
-    };
+    });
 
     recognition.onstart=()=>{
 
         isListening=true;
 
         micBtn.classList.add("listening");
+        app.classList.add("listening");
 
         voiceText.innerText="Listening...";
 
@@ -711,7 +721,8 @@ if(SpeechRecognition){
 
     recognition.onresult=(event)=>{
 
-        let command=event.results[0][0].transcript;
+        const command=
+        event.results[0][0].transcript;
 
         processCommand(command);
 
@@ -722,9 +733,12 @@ if(SpeechRecognition){
         isListening=false;
 
         micBtn.classList.remove("listening");
+        app.classList.remove("listening");
 
         if(status.innerText==="Listening"){
+
             status.innerText="Active";
+
         }
 
     };
@@ -734,20 +748,30 @@ if(SpeechRecognition){
         isListening=false;
 
         micBtn.classList.remove("listening");
+        app.classList.remove("listening");
 
         if(event.error==="not-allowed"){
 
-            voiceText.innerText="Please allow microphone permission";
+            voiceText.innerText=
+            "Microphone permission denied. Allow microphone access.";
 
         }
         else if(event.error==="no-speech"){
 
-            voiceText.innerText="No voice detected. Try again.";
+            voiceText.innerText=
+            "No voice detected. Please try again.";
+
+        }
+        else if(event.error==="network"){
+
+            voiceText.innerText=
+            "Network error. Check your internet connection.";
 
         }
         else{
 
-            voiceText.innerText="Voice error: "+event.error;
+            voiceText.innerText=
+            "Voice error: "+event.error;
 
         }
 
@@ -758,10 +782,21 @@ if(SpeechRecognition){
 }
 else{
 
+    micBtn.disabled=true;
+
     voiceText.innerText=
-    "Voice recognition not supported in this browser";
+    "Voice recognition not supported. Try a supported browser.";
 
 }
+
+/* INITIAL MESSAGE */
+
+window.addEventListener("load",()=>{
+
+    voiceText.innerText=
+    "JARVIS V1.0 READY. TAP MICROPHONE TO SPEAK.";
+
+});
 
 </script>
 
