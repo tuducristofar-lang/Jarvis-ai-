@@ -401,9 +401,9 @@ body::before{
 
 <script>
 
-/* JARVIS AI V1.0 ENGINE */
-
 "use strict";
+
+/* ELEMENTS */
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
@@ -411,10 +411,6 @@ const sendBtn = document.getElementById("sendBtn");
 const micBtn = document.getElementById("micBtn");
 const statusText = document.getElementById("status");
 const aiStage = document.getElementById("aiStage");
-
-/* BACKEND URL */
-
-const JARVIS_API_URL = "YOUR_BACKEND_URL";
 
 /* VARIABLES */
 
@@ -428,6 +424,7 @@ let recognition = null;
 function addMessage(message,type){
 
     const div = document.createElement("div");
+
     div.className = "message " + type;
     div.textContent = message;
 
@@ -435,7 +432,7 @@ function addMessage(message,type){
     chat.scrollTop = chat.scrollHeight;
 }
 
-/* SPEAK */
+/* VOICE */
 
 function speak(text){
 
@@ -480,135 +477,417 @@ function detectLanguage(text){
     }
 }
 
-/* LOCAL COMMANDS */
+/* TIME */
+
+function getTime(){
+
+    const now = new Date();
+
+    return now.toLocaleTimeString(
+        currentLanguage,
+        {
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            hour12:true
+        }
+    );
+}
+
+/* DATE */
+
+function getDate(){
+
+    return new Date().toLocaleDateString(
+        currentLanguage,
+        {
+            weekday:"long",
+            day:"numeric",
+            month:"long",
+            year:"numeric"
+        }
+    );
+}
+
+/* SAFE CALCULATOR */
+
+function calculateExpression(expression){
+
+    const clean = expression.replace(/\s+/g,"");
+
+    if(!clean || !/^[0-9+\-*/%.()]+$/.test(clean)){
+        throw new Error("Invalid expression");
+    }
+
+    const tokens = clean.match(/\d*\.?\d+|[()+\-*/%]/g);
+
+    if(!tokens || tokens.join("") !== clean){
+        throw new Error("Invalid expression");
+    }
+
+    let position = 0;
+
+    function parseExpression(){
+
+        let value = parseTerm();
+
+        while(
+            tokens[position] === "+" ||
+            tokens[position] === "-"
+        ){
+
+            const operator = tokens[position++];
+
+            const right = parseTerm();
+
+            value = operator === "+"
+                ? value + right
+                : value - right;
+        }
+
+        return value;
+    }
+
+    function parseTerm(){
+
+        let value = parseFactor();
+
+        while(
+            tokens[position] === "*" ||
+            tokens[position] === "/" ||
+            tokens[position] === "%"
+        ){
+
+            const operator = tokens[position++];
+
+            const right = parseFactor();
+
+            if(
+                (operator === "/" || operator === "%") &&
+                right === 0
+            ){
+                throw new Error("Division by zero");
+            }
+
+            if(operator === "*") value *= right;
+            if(operator === "/") value /= right;
+            if(operator === "%") value %= right;
+        }
+
+        return value;
+    }
+
+    function parseFactor(){
+
+        if(tokens[position] === "+"){
+            position++;
+            return parseFactor();
+        }
+
+        if(tokens[position] === "-"){
+            position++;
+            return -parseFactor();
+        }
+
+        if(tokens[position] === "("){
+
+            position++;
+
+            const value = parseExpression();
+
+            if(tokens[position] !== ")"){
+                throw new Error("Missing bracket");
+            }
+
+            position++;
+
+            return value;
+        }
+
+        const token = tokens[position++];
+
+        if(!token || !/^\d*\.?\d+$/.test(token)){
+            throw new Error("Invalid number");
+        }
+
+        return Number(token);
+    }
+
+    const result = parseExpression();
+
+    if(position !== tokens.length || !Number.isFinite(result)){
+        throw new Error("Invalid calculation");
+    }
+
+    return Number(result.toFixed(8));
+}
+
+/* LOCAL COMMAND ENGINE */
 
 function getResponse(text){
 
     const command = text.toLowerCase().trim();
     const hindi = currentLanguage === "hi-IN";
 
-    if(
-        command.includes("hello") ||
-        command.includes("hi jarvis") ||
-        command.includes("hey jarvis") ||
-        command.includes("नमस्ते")
-    ){
-        return hindi
-        ? "नमस्ते सर! मैं आपकी क्या मदद कर सकता हूँ?"
-        : "Hello Sir! How may I help you?";
-    }
+    /* GREETING */
 
     if(
-        command.includes("help") ||
-        command.includes("मदद")
+        /^(hello|hi|hey|hi jarvis|hey jarvis)$/.test(command) ||
+        command.includes("नमस्ते") ||
+        command.includes("प्रणाम")
     ){
+
         return hindi
-        ? "सर, मैं Google और YouTube खोल सकता हूँ और AI से सवालों के जवाब दे सकता हूँ।"
-        : "Sir, I can open Google and YouTube and answer questions using my AI connection.";
+            ? "नमस्ते सर! मैं आपकी क्या मदद कर सकता हूँ?"
+            : "Hello Sir! How may I help you?";
     }
+
+    /* TIME */
+
+    if(
+        command.includes("time") ||
+        command.includes("समय") ||
+        command.includes("टाइम") ||
+        command.includes("वक्त")
+    ){
+
+        return hindi
+            ? "सर, अभी समय है " + getTime()
+            : "Sir, the current time is " + getTime();
+    }
+
+    /* DATE */
+
+    if(
+        command.includes("date") ||
+        command.includes("today") ||
+        command.includes("दिनांक") ||
+        command.includes("तारीख") ||
+        command.includes("आज कौन सा दिन")
+    ){
+
+        return hindi
+            ? "आज की तारीख है " + getDate()
+            : "Today's date is " + getDate();
+    }
+
+    /* GOOGLE OPEN */
 
     if(
         command.includes("open google") ||
         command.includes("google kholo") ||
         command.includes("गूगल खोलो")
     ){
+
         window.open("https://www.google.com","_blank");
 
         return hindi
-        ? "जी सर, Google खोल रहा हूँ।"
-        : "Opening Google, Sir.";
+            ? "जी सर, Google खोल रहा हूँ।"
+            : "Opening Google, Sir.";
     }
+
+    /* YOUTUBE OPEN */
 
     if(
         command.includes("open youtube") ||
         command.includes("youtube kholo") ||
         command.includes("यूट्यूब खोलो")
     ){
+
         window.open("https://www.youtube.com","_blank");
 
         return hindi
-        ? "जी सर, YouTube खोल रहा हूँ।"
-        : "Opening YouTube, Sir.";
+            ? "जी सर, YouTube खोल रहा हूँ।"
+            : "Opening YouTube, Sir.";
     }
 
-    if(command.startsWith("search ")){
+    /* GOOGLE SEARCH */
 
-        const query = text.substring(7).trim();
+    let googleQuery = null;
+
+    if(command.startsWith("search ")){
+        googleQuery = text.substring(7).trim();
+    }
+
+    if(command.includes("google par") && command.includes("search")){
+        googleQuery = text
+            .replace(/google par/i,"")
+            .replace(/search karo/i,"")
+            .trim();
+    }
+
+    if(command.includes("गूगल पर")){
+        googleQuery = text
+            .replace(/गूगल पर/,"")
+            .replace(/सर्च करो/,"")
+            .replace(/खोजो/,"")
+            .trim();
+    }
+
+    if(googleQuery){
 
         window.open(
             "https://www.google.com/search?q=" +
-            encodeURIComponent(query),
+            encodeURIComponent(googleQuery),
             "_blank"
         );
 
-        return "Searching Google for " + query;
+        return hindi
+            ? "जी सर, Google पर खोज रहा हूँ।"
+            : "Searching Google for " + googleQuery;
     }
 
-    if(command.startsWith("play ")){
+    /* YOUTUBE SEARCH */
 
-        const query = text.substring(5).trim();
+    let youtubeQuery = null;
+
+    if(command.startsWith("play ")){
+        youtubeQuery = text.substring(5).trim();
+    }
+
+    if(command.includes("youtube par")){
+        youtubeQuery = text
+            .replace(/youtube par/i,"")
+            .replace(/search karo/i,"")
+            .replace(/chalao/i,"")
+            .trim();
+    }
+
+    if(command.includes("यूट्यूब पर")){
+        youtubeQuery = text
+            .replace(/यूट्यूब पर/,"")
+            .replace(/सर्च करो/,"")
+            .replace(/चलाओ/,"")
+            .trim();
+    }
+
+    if(youtubeQuery){
 
         window.open(
             "https://www.youtube.com/results?search_query=" +
-            encodeURIComponent(query),
+            encodeURIComponent(youtubeQuery),
             "_blank"
         );
 
-        return "Searching YouTube for " + query;
+        return hindi
+            ? "जी सर, YouTube पर खोज रहा हूँ।"
+            : "Searching YouTube for " + youtubeQuery;
     }
+
+    /* CALCULATOR */
+
+    let mathExpression = null;
+
+    if(command.startsWith("calculate ")){
+        mathExpression = text.substring(10).trim();
+    }
+
+    if(command.startsWith("calculator ")){
+        mathExpression = text.substring(11).trim();
+    }
+
+    if(command.startsWith("गणना ")){
+        mathExpression = text.substring(5).trim();
+    }
+
+    if(command.startsWith("calculate") && !mathExpression){
+        return "Sir, please enter a calculation. Example: calculate 25+25";
+    }
+
+    if(mathExpression){
+
+        try{
+
+            const answer = calculateExpression(mathExpression);
+
+            return hindi
+                ? "सर, इसका जवाब है " + answer
+                : "Sir, the answer is " + answer;
+
+        }catch(error){
+
+            return hindi
+                ? "सर, यह गणना सही नहीं है। कृपया दोबारा लिखें।"
+                : "Sorry Sir, invalid calculation.";
+        }
+    }
+
+    /* HELP */
+
+    if(
+        command.includes("help") ||
+        command.includes("मदद") ||
+        command.includes("क्या कर सकते")
+    ){
+
+        return hindi
+            ? "सर, मैं समय और तारीख बता सकता हूँ, Calculator चला सकता हूँ, Google और YouTube खोल सकता हूँ तथा Voice Commands समझ सकता हूँ।"
+            : "Sir, I can tell time and date, calculate numbers, open Google and YouTube, and understand voice commands.";
+    }
+
+    /* IDENTITY */
+
+    if(
+        command.includes("who are you") ||
+        command.includes("तुम कौन हो")
+    ){
+
+        return hindi
+            ? "सर, मैं JARVIS AI V1.0 हूँ, आपका Local Command Assistant."
+            : "Sir, I am JARVIS AI V1.0, your Local Command Assistant.";
+    }
+
+    /* THANK YOU */
 
     if(
         command.includes("thank you") ||
-        command.includes("धन्यवाद")
+        command.includes("धन्यवाद") ||
+        command.includes("शुक्रिया")
     ){
+
         return hindi
-        ? "आपका स्वागत है सर।"
-        : "You are welcome, Sir.";
+            ? "आपका स्वागत है सर।"
+            : "You are welcome, Sir.";
     }
 
-    return null;
-}
-
-/* AI BRAIN CONNECTION */
-
-async function askJarvisAI(message){
+    /* VOICE OFF */
 
     if(
-        !JARVIS_API_URL ||
-        JARVIS_API_URL === "YOUR_BACKEND_URL"
+        command.includes("mute") ||
+        command.includes("voice off")
     ){
-        throw new Error("Backend URL is not configured.");
+
+        voiceEnabled = false;
+
+        return hindi
+            ? "सर, Voice बंद कर दी गई है।"
+            : "Voice has been turned off, Sir.";
     }
 
-    const response = await fetch(
-        JARVIS_API_URL + "/api/chat",
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                message:message
-            })
-        }
-    );
+    /* VOICE ON */
 
-    const data = await response.json();
+    if(
+        command.includes("unmute") ||
+        command.includes("voice on")
+    ){
 
-    if(!response.ok){
-        throw new Error(data.error || "AI server error");
+        voiceEnabled = true;
+
+        return hindi
+            ? "सर, Voice चालू कर दी गई है।"
+            : "Voice has been enabled, Sir.";
     }
 
-    if(!data.reply){
-        throw new Error("No AI reply received.");
-    }
+    /* UNKNOWN COMMAND */
 
-    return data.reply;
+    return hindi
+        ? "सर, यह Command अभी मेरे पास उपलब्ध नहीं है। Help लिखकर मेरे Commands देख सकते हैं।"
+        : "Sorry Sir, I don't have that command yet. Type Help to see my available commands.";
 }
 
 /* PROCESS MESSAGE */
 
-async function processMessage(text){
+function processMessage(text){
 
     text = text.trim();
 
@@ -620,51 +899,22 @@ async function processMessage(text){
 
     input.value = "";
 
-    const localResponse = getResponse(text);
+    const response = getResponse(text);
 
-    if(localResponse){
+    addMessage(response,"jarvis-message");
 
-        addMessage(localResponse,"jarvis-message");
-        speak(localResponse);
+    speak(response);
 
-        return;
-    }
-
-    statusText.textContent = "● THINKING";
-    aiStage.classList.add("active");
-    sendBtn.disabled = true;
-
-    try{
-
-        const answer = await askJarvisAI(text);
-
-        addMessage(answer,"jarvis-message");
-        speak(answer);
-
-    }catch(error){
-
-        console.error("JARVIS ERROR:",error);
-
-        const errorMessage =
-        currentLanguage === "hi-IN"
-        ? "सर, मेरा AI Brain अभी कनेक्ट नहीं है। Backend URL और Server जाँचें।"
-        : "Sir, my AI Brain is not connected. Please check the backend URL and server.";
-
-        addMessage(errorMessage,"jarvis-message");
-        speak(errorMessage);
-
-    }finally{
-
-        statusText.textContent = "● SYSTEM ONLINE";
-        aiStage.classList.remove("active");
-        sendBtn.disabled = false;
-    }
+    statusText.textContent = "● SYSTEM ONLINE";
+    aiStage.classList.remove("active");
 }
 
 /* SEND BUTTON */
 
 sendBtn.addEventListener("click",function(){
+
     processMessage(input.value);
+
 });
 
 /* ENTER BUTTON */
@@ -674,6 +924,7 @@ input.addEventListener("keydown",function(event){
     if(event.key === "Enter"){
         processMessage(input.value);
     }
+
 });
 
 /* VOICE RECOGNITION */
@@ -696,13 +947,14 @@ if(SpeechRecognition){
         isListening = true;
 
         micBtn.classList.add("listening");
+
         statusText.textContent = "● LISTENING";
     };
 
     recognition.onresult = function(event){
 
         const transcript =
-        event.results[0][0].transcript;
+            event.results[0][0].transcript;
 
         processMessage(transcript);
     };
@@ -726,7 +978,10 @@ if(SpeechRecognition){
 
         micBtn.classList.remove("listening");
 
-        if(statusText.textContent === "● LISTENING"){
+        if(
+            statusText.textContent === "● LISTENING" ||
+            statusText.textContent === "● VOICE ERROR"
+        ){
             statusText.textContent = "● SYSTEM ONLINE";
         }
     };
@@ -739,9 +994,13 @@ if(SpeechRecognition){
         }
 
         try{
+
             recognition.lang = currentLanguage;
+
             recognition.start();
+
         }catch(error){
+
             statusText.textContent = "● PLEASE WAIT";
         }
     });
@@ -769,8 +1028,14 @@ document.addEventListener("keydown",function(event){
         if(isListening && recognition){
             recognition.stop();
         }
+
+        aiStage.classList.remove("active");
+        statusText.textContent = "● SYSTEM ONLINE";
     }
+
 });
+
+/* INITIALIZATION */
 
 console.log("JARVIS AI V1.0 ENGINE LOADED");
 
